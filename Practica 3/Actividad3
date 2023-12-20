@@ -1,0 +1,288 @@
+Processing_Resource (
+   Type                   => Regular_Processor,
+   Name                   => cpu1,
+   Max_Interrupt_Priority => 32767,
+   Min_Interrupt_Priority => 1,
+   Worst_ISR_Switch       => 0.00,
+   Avg_ISR_Switch         => 0.00,
+   Best_ISR_Switch        => 0.00,
+   Speed_Factor           => 1.00);
+
+Processing_Resource (
+   Type                   => Regular_Processor,
+   Name                   => cpu2,
+   Max_Interrupt_Priority => 32767,
+   Min_Interrupt_Priority => 1,
+   Worst_ISR_Switch       => 0.00,
+   Avg_ISR_Switch         => 0.00,
+   Best_ISR_Switch        => 0.00,
+   Speed_Factor           => 1.00);
+
+Processing_Resource (
+   Type                   => Regular_Processor,
+   Name                   => cpu3,
+   Max_Interrupt_Priority => 32767,
+   Min_Interrupt_Priority => 1,
+   Worst_ISR_Switch       => 0.00,
+   Avg_ISR_Switch         => 0.00,
+   Best_ISR_Switch        => 0.00,
+   Speed_Factor           => 1.00);
+
+Processing_Resource (
+   Type                   => Regular_Processor,
+   Name                   => red,
+   Max_Interrupt_Priority => 32767,
+   Min_Interrupt_Priority => 1,
+   Worst_ISR_Switch       => 0.00,
+   Avg_ISR_Switch         => 0.00,
+   Best_ISR_Switch        => 0.00,
+   Speed_Factor           => 1.00);
+
+Scheduler (
+   Type            => Primary_Scheduler,
+   Name            => cpu1_scheduler,
+   Host            => cpu1,
+   Policy          => 
+      ( Type                 => Fixed_Priority,
+        Worst_Context_Switch => 0.00,
+        Avg_Context_Switch   => 0.00,
+        Best_Context_Switch  => 0.00,
+        Max_Priority         => 32767,
+        Min_Priority         => 1));
+
+Scheduler (
+   Type            => Primary_Scheduler,
+   Name            => cpu2_scheduler,
+   Host            => cpu2,
+   Policy          => 
+      ( Type                 => Fixed_Priority,
+        Worst_Context_Switch => 0.00,
+        Avg_Context_Switch   => 0.00,
+        Best_Context_Switch  => 0.00,
+        Max_Priority         => 32767,
+        Min_Priority         => 1));
+
+Scheduler (
+   Type            => Primary_Scheduler,
+   Name            => cpu3_scheduler,
+   Host            => cpu3,
+   Policy          => 
+      ( Type                 => Fixed_Priority,
+        Worst_Context_Switch => 0.00,
+        Avg_Context_Switch   => 0.00,
+        Best_Context_Switch  => 0.00,
+        Max_Priority         => 32767,
+        Min_Priority         => 1));
+
+Scheduler (
+   Type            => Primary_Scheduler,
+   Name            => red_scheduler,
+   Host            => red,
+   Policy          => 
+      ( Type                 => Fixed_Priority,
+        Worst_Context_Switch => 0.00,
+        Avg_Context_Switch   => 0.00,
+        Best_Context_Switch  => 0.00,
+        Max_Priority         => 32767,
+        Min_Priority         => 1));
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => cpu1_server,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 10,
+        Preassigned  => NO),
+   Scheduler                  => cpu1_scheduler);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => cpu2_server,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 20,
+        Preassigned  => NO),
+   Scheduler                  => cpu2_scheduler);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => cpu3_server,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 30,
+        Preassigned  => NO),
+   Scheduler                  => cpu3_scheduler);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => red_server,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 1,
+        Preassigned  => NO),
+   Scheduler                  => red_scheduler);
+
+Operation (
+   Type                       => Simple,
+   Name                       => op6,
+   Worst_Case_Execution_Time  => 6.00,
+   Avg_Case_Execution_Time    => 1.000E+100,
+   Best_Case_Execution_Time   => 0.00);
+
+Operation (
+   Type                       => Simple,
+   Name                       => op14,
+   Worst_Case_Execution_Time  => 14.00,
+   Avg_Case_Execution_Time    => 1.000E+100,
+   Best_Case_Execution_Time   => 0.00);
+
+Operation (
+   Type                       => Simple,
+   Name                       => op2,
+   Worst_Case_Execution_Time  => 2.00,
+   Avg_Case_Execution_Time    => 1.000E+100,
+   Best_Case_Execution_Time   => 0.00);
+
+Operation (
+   Type                       => Simple,
+   Name                       => op8,
+   Worst_Case_Execution_Time  => 8.00,
+   Avg_Case_Execution_Time    => 1.000E+100,
+   Best_Case_Execution_Time   => 0.00);
+
+Transaction (
+   Type            => regular,
+   Name            => flujo1,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => in,
+          Period     => 15.000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => link1),
+        ( Type => Regular,
+          Name => link2),
+        ( Type => Regular,
+          Name => link3),
+        ( Type => Regular,
+          Name => link4),
+        ( Type => Regular,
+          Name => out,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 40.000))),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => in,
+         Output_Event       => link1,
+         Activity_Operation => op8,
+         Activity_Server    => cpu1_server),
+        (Type               => Activity,
+         Input_Event        => link1,
+         Output_Event       => link2,
+         Activity_Operation => op2,
+         Activity_Server    => red_server),
+        (Type               => Activity,
+         Input_Event        => link2,
+         Output_Event       => link3,
+         Activity_Operation => op8,
+         Activity_Server    => cpu2_server),
+        (Type               => Activity,
+         Input_Event        => link3,
+         Output_Event       => link4,
+         Activity_Operation => op2,
+         Activity_Server    => red_server),
+        (Type               => Activity,
+         Input_Event        => link4,
+         Output_Event       => out,
+         Activity_Operation => op6,
+         Activity_Server    => cpu3_server)));
+
+Transaction (
+   Type            => regular,
+   Name            => flujo2,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => in,
+          Period     => 40.000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => link1),
+        ( Type => Regular,
+          Name => link2),
+        ( Type => Regular,
+          Name => out,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 100.000))),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => link1,
+         Output_Event       => link2,
+         Activity_Operation => op2,
+         Activity_Server    => red_server),
+        (Type               => Activity,
+         Input_Event        => link2,
+         Output_Event       => out,
+         Activity_Operation => op14,
+         Activity_Server    => cpu1_server),
+        (Type               => Activity,
+         Input_Event        => in,
+         Output_Event       => link1,
+         Activity_Operation => op6,
+         Activity_Server    => cpu2_server)));
+
+Transaction (
+   Type            => regular,
+   Name            => flujo3,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => in,
+          Period     => 30.000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => link1),
+        ( Type => Regular,
+          Name => link2),
+        ( Type => Regular,
+          Name => link3),
+        ( Type => Regular,
+          Name => link4),
+        ( Type => Regular,
+          Name => out,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 12.000))),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => in,
+         Output_Event       => link1,
+         Activity_Operation => op2,
+         Activity_Server    => cpu1_server),
+        (Type               => Activity,
+         Input_Event        => link1,
+         Output_Event       => link2,
+         Activity_Operation => op2,
+         Activity_Server    => red_server),
+        (Type               => Activity,
+         Input_Event        => link2,
+         Output_Event       => link3,
+         Activity_Operation => op6,
+         Activity_Server    => cpu2_server),
+        (Type               => Activity,
+         Input_Event        => link3,
+         Output_Event       => link4,
+         Activity_Operation => op2,
+         Activity_Server    => red_server),
+        (Type               => Activity,
+         Input_Event        => link4,
+         Output_Event       => out,
+         Activity_Operation => op8,
+         Activity_Server    => cpu3_server)));
+

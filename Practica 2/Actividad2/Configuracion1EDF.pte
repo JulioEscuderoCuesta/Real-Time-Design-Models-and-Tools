@@ -1,0 +1,9 @@
+Global_Configuration  EDF    0.00000000000000E+00    0.00000000000000E+00
+Tasks  5
+T1        1.002424  3         3         4
+T2        1.002424  4         4         3
+T3        0.902424  5         5         2
+T4        0.202424  6         6         1
+Principal 0.004994  50000     1         5
+Mutexes  0
+Mutex_Usages  0
